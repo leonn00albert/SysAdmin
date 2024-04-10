@@ -14,7 +14,6 @@ if ($IPv4Interfaces) {
         Write-Host "------------------------------------------------"
     }
 
-    # Prompt user to select an interface
     do {
         $InterfaceIndex = Read-Host "Enter the Interface Index to configure (leave blank to exit)"
         $SelectedInterface = $IPv4Interfaces | Where-Object { $_.InterfaceIndex -eq $InterfaceIndex }
@@ -23,17 +22,14 @@ if ($IPv4Interfaces) {
         }
     } while (-not $SelectedInterface -and -not [string]::IsNullOrWhiteSpace($InterfaceIndex))
 
-    # If a valid interface is selected, proceed with configuration
     if ($SelectedInterface) {
         Write-Host "Selected Interface: $($SelectedInterface.InterfaceAlias)"
 
-        # Remove existing IPv4 configuration
         if ($SelectedInterface.IPv4Address) {
             Write-Host "Removing existing IPv4 configuration..."
 
         }
         Set-NetIPInterface -InterfaceIndex $SelectedInterface.InterfaceIndex -Dhcp Enabled
-        # Prompt user for input to create a new IPv4 address
         $IPAddress = Read-Host "Enter IP Address (e.g., 192.168.1.230)"
         $PrefixLength = Read-Host "Enter Prefix Length (e.g., 24)"
         
@@ -47,9 +43,7 @@ if ($IPv4Interfaces) {
 
         }
 
-        # Create new IPv4 address with default gateway
 
-        # Prompt user for DNS server addresses
         $DNSAddresses = @()
         do {
             $DNSAddress = Read-Host "Enter DNS Server Address (leave blank to finish)"
@@ -58,7 +52,6 @@ if ($IPv4Interfaces) {
             }
         } while (-not [string]::IsNullOrWhiteSpace($DNSAddress))
 
-        # Set DNS server addresses
         if ($DNSAddresses.Count -gt 0) {
             Set-DnsClientServerAddress -InterfaceIndex $SelectedInterface.InterfaceIndex -ServerAddresses $DNSAddresses
             Write-Host "DNS server addresses set to: $($DNSAddresses -join ', ')"
